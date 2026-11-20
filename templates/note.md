@@ -3,6 +3,7 @@ title: 제목
 date: YYYY-MM-DD
 type: note            # note(요청 조사) / briefing(정기 자동)
 theme: theme-slug     # note일 때만. notes/ 아래 폴더 이름
+num: "NN"             # note일 때만. 전체 일련번호
 tags:
   - 태그1
   - 태그2

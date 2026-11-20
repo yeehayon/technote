@@ -3,44 +3,37 @@ site_url: https://yeehayon.github.io/technote/
 site_description: AI 에이전트 하네스 엔지니어링, 에이전트 설정(스킬 · MCP · AGENTS.md), 에이전트 장시간 · 무인 운영에 대한 기술 노트
 repo_url: https://github.com/yeehayon/technote
 docs_dir: docs
+use_directory_urls: true
 
+# 직접 만든 테마 (theme/main.html, theme/assets/)
 theme:
-  name: material
-  language: ko
-  palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      toggle: { icon: material/weather-night, name: 다크 모드 }
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      toggle: { icon: material/weather-sunny, name: 라이트 모드 }
-  features:
-    - navigation.tabs          # 상단 탭: 홈 / Tech Notes / 테마 / 브리핑 / 태그
-    - navigation.sections
-    - navigation.indexes       # 폴더의 index.md를 섹션 첫 페이지로
-    - navigation.top
-    - toc.follow
-    - search.suggest
-    - search.highlight
-    - content.code.copy        # 코드 복사 버튼
+  name: null
+  custom_dir: theme
 
-plugins:
-  - search
-  - tags
-  - awesome-pages        # 폴더별 .pages 파일로 메뉴 이름·순서 지정
+plugins: []   # 검색 등 기본 플러그인 끔
+
+# 테마(분류) 목록: 폴더 이름 → 화면에 보이는 이름
+extra:
+  themes:
+    harness-engineering: 하네스 엔지니어링
+    agent-config: 스킬 · MCP · 에이전트 설정
+    ai-night-shift: AI 야근시키기
 
 markdown_extensions:
   - admonition
+  - footnotes
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: "#"
+      toc_depth: 2-3
   - pymdownx.details
+  - pymdownx.highlight:
+      use_pygments: false
+  - pymdownx.inlinehilite
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.highlight
-  - pymdownx.inlinehilite
-  - pymdownx.tabbed: { alternate_style: true }
-  - tables
-  - toc: { permalink: true }
-  - attr_list
-  - md_in_html
+          format: !!python/name:pymdownx.superfences.fence_div_format

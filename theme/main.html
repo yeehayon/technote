@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- set themes = config.extra.themes %}
+  {%- set is_home = page and page.meta and page.meta.type == 'home' %}
+  {%- set title = page.meta.title if page and page.meta and page.meta.title else (page.title if page else config.site_name) %}
+  <title>{% if is_home %}{{ config.site_name }}{% else %}{{ title }} · {{ config.site_name }}{% endif %}</title>
+  <meta name="description" content="{{ config.site_description }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="{{ 'assets/site.css' | url }}">
+</head>
+<body>
+
+{#- 모든 글: front matter의 type이 note / briefing 인 페이지, 최신순 -#}
+{%- set posts = [] %}
+{%- for p in pages %}
+  {%- if p.page and p.page.meta and p.page.meta.type in ['note', 'briefing'] %}{% set _ = posts.append(p.page) %}{% endif %}
+{%- endfor %}
+{%- set posts = posts | sort(attribute='meta.date', reverse=True) %}
+
+{%- macro display_title(pg) -%}
+  {%- set t = pg.meta.title or pg.title -%}
+  {%- set n = (pg.meta.num ~ '. ') if pg.meta.num else '' -%}
+  {%- if n and t.startswith(n) %}{{ t[n|length:] }}{% else %}{{ t }}{% endif -%}
+{%- endmacro %}
+
+{%- macro theme_name(pg) -%}
+  {%- if pg.meta.type == 'briefing' %}브리핑{% else %}{{ themes.get(pg.meta.theme, pg.meta.theme) }}{% endif -%}
+{%- endmacro %}
+
+{% if is_home %}
+  <header class="mast">
+    <p class="eyebrow">TECHNOTE</p>
+    <h1>{{ config.site_name }}</h1>
+    <div class="lede">{{ page.content }}</div>
+  </header>
+
+  <main class="wrap">
+    <div class="filters" role="group" aria-label="테마로 거르기">
+      <button type="button" class="chip is-on" data-filter="all">전체 <span>{{ posts | length }}</span></button>
+      {%- for slug, name in themes.items() %}
+        {%- set cnt = posts | selectattr('meta.theme', 'equalto', slug) | list | length %}
+        <button type="button" class="chip" data-filter="{{ slug }}"{% if cnt == 0 %} disabled{% endif %}>{{ name }} <span>{{ cnt }}</span></button>
+      {%- endfor %}
+      {%- set bcnt = posts | selectattr('meta.type', 'equalto', 'briefing') | list | length %}
+      {%- if bcnt %}<button type="button" class="chip" data-filter="briefing">브리핑 <span>{{ bcnt }}</span></button>{% endif %}
+    </div>
+
+    <ol class="index">
+      {%- for pg in posts %}
+      <li data-theme="{{ 'briefing' if pg.meta.type == 'briefing' else pg.meta.theme }}">
+        <a href="{{ pg.url | url }}">
+          <span class="no">{{ pg.meta.num if pg.meta.num else 'B' }}</span>
+          <span class="nm">{{ display_title(pg) }}{% if pg.meta.status and pg.meta.status != '정리완료' %} <em class="st">{{ pg.meta.status }}</em>{% endif %}</span>
+          <span class="th">{{ theme_name(pg) }}</span>
+          <span class="dt">{{ pg.meta.date }}</span>
+        </a>
+      </li>
+      {%- else %}
+      <li class="empty">아직 글이 없습니다.</li>
+      {%- endfor %}
+    </ol>
+  </main>
+
+{% elif page and page.meta and page.meta.type in ['note', 'briefing'] %}
+  <nav class="top wrap"><a href="{{ '.' | url }}">← {{ config.site_name }}</a></nav>
+
+  <header class="mast mast--post">
+    <p class="kicker">
+      <span class="no">{{ page.meta.num if page.meta.num else 'B' }}</span>
+      {{ theme_name(page) }}
+    </p>
+    <h1>{{ display_title(page) }}</h1>
+    <p class="dateline">{{ page.meta.date }}{% if page.meta.status %} · {{ page.meta.status }}{% endif %}</p>
+  </header>
+
+  <main class="wrap cols">
+    <article class="prose">{{ page.content }}</article>
+    <aside class="rail">
+      {%- if page.toc and page.toc.items %}
+      <p class="rail-h">목차</p>
+      <ol class="toc">
+        {%- for h in page.toc.items %}
+        <li><a href="{{ h.url }}">{{ h.title }}</a></li>
+        {%- endfor %}
+      </ol>
+      {%- endif %}
+      {%- if page.meta.tags %}
+      <p class="rail-h">태그</p>
+      <p class="tags">{% for t in page.meta.tags %}<span>{{ t }}</span>{% endfor %}</p>
+      {%- endif %}
+    </aside>
+  </main>
+
+  <footer class="wrap foot"><a href="{{ '.' | url }}">← 전체 목록</a></footer>
+
+{% else %}
+  <nav class="top wrap"><a href="{{ '.' | url }}">← {{ config.site_name }}</a></nav>
+  <main class="wrap"><article class="prose prose--solo">{{ page.content if page else '' }}</article></main>
+{% endif %}
+
+<script src="{{ 'assets/site.js' | url }}"></script>
+<script type="module">
+  if (document.querySelector('.mermaid')) {
+    const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs');
+    const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+    mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral', fontFamily: 'Pretendard Variable, sans-serif' });
+    const els = [...document.querySelectorAll('.mermaid')];
+    for (let i = 0; i < els.length; i++) {
+      try {
+        const { svg } = await mermaid.render('mmd-' + i, els[i].textContent);
+        els[i].innerHTML = svg;
+      } catch (e) { els[i].classList.add('mermaid-error'); }
+      els[i].setAttribute('data-processed', 'true');
+    }
+  }
+</script>
+</body>
+</html>
