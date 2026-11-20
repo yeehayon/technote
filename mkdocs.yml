@@ -1,6 +1,6 @@
 site_name: 테크노트
 site_url: https://yeehayon.github.io/technote/
-site_description: Claude와 함께 조사하고 정리한 기술 노트
+site_description: AI 에이전트 하네스 엔지니어링, 에이전트 설정(스킬 · MCP · AGENTS.md), 에이전트 장시간 · 무인 운영에 대한 기술 노트
 repo_url: https://github.com/yeehayon/technote
 docs_dir: docs
 

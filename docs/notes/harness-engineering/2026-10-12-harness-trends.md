@@ -246,4 +246,4 @@ flowchart LR
 
 ---
 
-<small>이 글은 Claude와 함께 위 출처를 조사해 작성했습니다. 기준일: 2026-10-12</small>
+<small>기준일: 2026-10-12</small>

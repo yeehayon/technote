@@ -24,4 +24,4 @@ tags:
 
 ---
 
-<small>이 글은 Claude가 위 출처를 읽고 자동 작성했습니다. 작성일: YYYY-MM-DD</small>
+<small>작성일: YYYY-MM-DD</small>

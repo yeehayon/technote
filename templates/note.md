@@ -44,4 +44,4 @@ status: 정리완료      # 조사중 / 정리완료
 
 ---
 
-<small>이 글은 Claude가 위 출처를 읽고 작성했습니다. 작성일: YYYY-MM-DD</small>
+<small>작성일: YYYY-MM-DD</small>
